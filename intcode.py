@@ -31,9 +31,7 @@ class Intcode:
         self.data[address] = value
         return self
 
-    def run(self, return_value: bool = False) -> int | None:
+    def run(self, return_value: bool = False) -> int:
         while self.pc < len(self.data) and not self.has_halted:
             self.opcode(self.data[self.pc])
-        if return_value:
-            return self.data[0]
-        print(self.data[0])
+        return self.data[0]
