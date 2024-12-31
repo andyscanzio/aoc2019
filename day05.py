@@ -8,13 +8,13 @@ test, input = load_inputs("5")
 def part1(data: str) -> int:
     input: Callable[[], int] = lambda: 1
     output: Callable[[int], None] = lambda x: print(x)
-    return Intcode(data, input, output).run()
+    return Intcode(data, input, output).run()[0]
 
 
 def part2(data: str) -> int:
     input: Callable[[], int] = lambda: 5
     output: Callable[[int], None] = lambda x: print(x)
-    return Intcode(data, input, output).run()
+    return Intcode(data, input, output).run()[0]
 
 
 part1(input)
