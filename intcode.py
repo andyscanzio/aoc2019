@@ -14,7 +14,8 @@ class Intcode:
         else:
             self.data = data
         self.pc = 0
-        self.has_halted = False
+        self.halted = False
+        self.interrupt = False
         self.input = input
         self.output = output
 
@@ -40,6 +41,7 @@ class Intcode:
             if self.output is None:
                 raise ValueError("Missing output function")
             self.output(v1[0])
+            self.interrupt = True
         self.pc += 2
 
     def instruction_jump(self, mode: int, jump_condition: bool) -> None:
@@ -54,7 +56,7 @@ class Intcode:
         mode, code = divmod(opcode, 100)
         match code:
             case 99:
-                self.has_halted = True
+                self.halted = True
             case 1:
                 self.instruction_3(mode, add)
             case 2:
@@ -72,13 +74,24 @@ class Intcode:
             case 8:
                 self.instruction_3(mode, eq)
             case _:
-                raise ValueError
+                raise ValueError("Unknown opcode")
 
     def set_value(self, address: int, value: int) -> Self:
         self.data[address] = value
         return self
 
+    def unset_interrupt(self) -> None:
+        self.interrupt = False
+
+    def has_halted(self) -> bool:
+        return self.halted
+
     def run(self) -> int:
-        while self.pc < len(self.data) and not self.has_halted:
+        while self.pc < len(self.data) and not self.halted:
+            self.opcode(self.data[self.pc])
+        return self.data[0]
+
+    def run_with_interrupt(self) -> int:
+        while self.pc < len(self.data) and not self.halted and not self.interrupt:
             self.opcode(self.data[self.pc])
         return self.data[0]
